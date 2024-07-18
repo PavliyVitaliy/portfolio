@@ -1,0 +1,62 @@
+version: "3"
+services:
+  portfolio-postgres-db:
+    image: postgres:14
+    container_name: portfolio-postgres-db
+    ports:
+      - 5432:5432
+    restart: always
+    env_file:
+      - ./backend/.env
+    networks:
+      - portfolio.network
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+  portfolio-mongo-db:
+    image: mongo
+    container_name: portfolio-mongo-db
+    ports:
+      - 27017:27017
+    networks:
+      - portfolio.network
+
+  portfolio-backend:
+    container_name: portfolio-backend
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/code/backend
+    depends_on:
+      - portfolio-postgres-db
+      - portfolio-mongo-db
+    restart: always
+    networks:
+      - portfolio.network
+    ports:
+      - 8000:8000
+
+  portfolio-proxy:
+    container_name: portfolio-proxy
+    build:
+      context: .
+      dockerfile: ./nginx/proxy.Dockerfile
+    depends_on:
+      - portfolio-backend
+    networks:
+      - portfolio.network
+    volumes:
+      - ./nginx/nginx.proxy.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    restart: always
+
+networks:
+  portfolio.network:
+    driver: bridge
+
+volumes:
+  postgres-db:
