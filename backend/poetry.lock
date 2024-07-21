@@ -541,6 +541,43 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pydantic-settings"
+version = "2.3.4"
+description = "Settings management using Pydantic"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pydantic_settings-2.3.4-py3-none-any.whl", hash = "sha256:11ad8bacb68a045f00e4f862c7a718c8a9ec766aa8fd4c32e39a0594b207b53a"},
+    {file = "pydantic_settings-2.3.4.tar.gz", hash = "sha256:c5802e3d62b78e82522319bbc9b8f8ffb28ad1c988a99311d04f2a6051fca0a7"},
+]
+
+[package.dependencies]
+pydantic = ">=2.7.0"
+python-dotenv = ">=0.21.0"
+
+[package.extras]
+toml = ["tomli (>=2.0.1)"]
+yaml = ["pyyaml (>=6.0.1)"]
+
+[[package]]
+name = "pydentic"
+version = "0.0.1.dev3"
+description = "Pydantic Identifiers"
+optional = false
+python-versions = ">=3.6.1"
+files = [
+    {file = "pydentic-0.0.1.dev3-py3-none-any.whl", hash = "sha256:b37f690f262e02e781deae8588a411c596489bc2837701fbb5e8c59b31b4236e"},
+    {file = "pydentic-0.0.1.dev3.tar.gz", hash = "sha256:4c5ee9c260e3cbcdb2a2d725b1d98046cb2b5298e6d6154449a685cf4cca85ec"},
+]
+
+[package.dependencies]
+python-stdnum = ">=1.16"
+
+[package.extras]
+dev = ["flake8"]
+test = ["pydantic", "pytest"]
+
+[[package]]
 name = "pygments"
 version = "2.18.0"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -653,6 +690,22 @@ files = [
 
 [package.extras]
 dev = ["atomicwrites (==1.4.1)", "attrs (==23.2.0)", "coverage (==7.4.1)", "hatch", "invoke (==2.2.0)", "more-itertools (==10.2.0)", "pbr (==6.0.0)", "pluggy (==1.4.0)", "py (==1.11.0)", "pytest (==8.0.0)", "pytest-cov (==4.1.0)", "pytest-timeout (==2.2.0)", "pyyaml (==6.0.1)", "ruff (==0.2.1)"]
+
+[[package]]
+name = "python-stdnum"
+version = "1.20"
+description = "Python module to handle standardized numbers and codes"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-stdnum-1.20.tar.gz", hash = "sha256:ad2a2cf2eb025de408210235f36b4ae31252de3186240ccaa8126e117cb82690"},
+    {file = "python_stdnum-1.20-py2.py3-none-any.whl", hash = "sha256:111008e10391d54fb2afad2a10df70d5cb0c6c0a7ec82fec6f022cb8712961d3"},
+]
+
+[package.extras]
+soap = ["zeep"]
+soap-alt = ["suds"]
+soap-fallback = ["PySimpleSOAP"]
 
 [[package]]
 name = "pyyaml"
@@ -1039,4 +1092,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "86b14d99f1f03bed551cbc24a275a4022aba3930836ba0e87a0b0175d65d64ab"
+content-hash = "145ef918485c2ff4912d42e56b712e8ec74285c77d7d6530ceb49b5104d26cbd"
