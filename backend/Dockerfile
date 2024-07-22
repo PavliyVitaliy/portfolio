@@ -1,7 +1,7 @@
 FROM python:3.12
 
     # python
-    ENV PYTHONUNBUFFERED=1 \
+ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONFAULTHANDLER=1 \
@@ -13,6 +13,7 @@ FROM python:3.12
     PIP_DEFAULT_TIMEOUT=100 \
     \
     # poetry
+    POETRY_VERSION=1.8.3 \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_CACHE_DIR='/var/cache/pypoetry'
 
