@@ -31,6 +31,10 @@ class PostgresConfig(BaseModel):
     }
 
 
+class AccessToken(BaseModel):
+    lifetime_seconds: int = 3600
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -42,6 +46,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: PostgresConfig
+    access_token: AccessToken()
 
 
 settings = Settings()
