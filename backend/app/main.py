@@ -17,13 +17,13 @@ async def lifespan(app: FastAPI):
     # shutdown
     await db_helper.dispose()
 
+
 app = FastAPI(
     default_response_class=ORJSONResponse,
     lifespan=lifespan,
 )
 app.include_router(
     api_router,
-    prefix=settings.api.prefix,
 )
 
 
@@ -37,14 +37,10 @@ async def read_root() -> dict:
     return {"Hello": "Portfolio World"}
 
 
-@app.get("/items/{item_id}")
+@app.get("/item/{item_id}")
 async def read_item(item_id: int, q: Union[str, None] = None) -> dict:
     return {"item_id": item_id, "q": q}
 
+
 if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host=settings.run.host,
-        port=settings.run.port,
-        reload=True
-    )
+    uvicorn.run("main:app", host=settings.run.host, port=settings.run.port, reload=True)
