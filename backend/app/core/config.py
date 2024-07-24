@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: PostgresConfig
-    access_token: AccessToken()
+    access_token: AccessToken
 
 
 settings = Settings()
