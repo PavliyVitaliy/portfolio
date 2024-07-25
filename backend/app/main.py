@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    default_response_class=ORJSONResponse,
+    # default_response_class=ORJSONResponse, TODO add ORJSON dependency by poetry
     lifespan=lifespan,
 )
 app.include_router(
