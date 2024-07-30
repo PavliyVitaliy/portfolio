@@ -1,11 +1,8 @@
 from contextlib import asynccontextmanager
 
-import uvicorn
-
 from typing import Union
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from core.config import settings
 from api import router as api_router
 from core.models import db_helper
 
@@ -40,7 +37,3 @@ async def read_root() -> dict:
 @app.get("/item/{item_id}")
 async def read_item(item_id: int, q: Union[str, None] = None) -> dict:
     return {"item_id": item_id, "q": q}
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host=settings.run.host, port=settings.run.port, reload=True)
