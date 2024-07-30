@@ -21,11 +21,10 @@ ENV PYTHONUNBUFFERED=1 \
 RUN pip install "poetry==$POETRY_VERSION"
 
 # Python requirements install via poetry
-WORKDIR /backend
-COPY /backend/poetry.lock /backend/poetry.lock
-COPY /backend/pyproject.toml /backend/pyproject.toml
+WORKDIR /code/backend/app
+COPY backend/poetry.lock backend/pyproject.toml ./
 RUN poetry install
 
-COPY /backend/app /backend/app
+COPY ./ /code/backend
 
-CMD ["uvicorn", "app.main:app", "--proxy-headers", "--host", "0.0.0.0"]
+CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0"]
