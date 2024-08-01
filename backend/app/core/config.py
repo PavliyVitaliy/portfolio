@@ -45,6 +45,11 @@ class PostgresConfig(BaseModel):
     }
 
 
+class MongoConfig(BaseModel):
+    uri: str
+    db: str
+
+
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
     reset_password_token_secret: str
@@ -63,6 +68,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     db: PostgresConfig
     access_token: AccessToken
+    mongo: MongoConfig
 
 
 settings = Settings()
