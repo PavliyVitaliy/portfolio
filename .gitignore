@@ -9,6 +9,7 @@ __pycache__/
 env/
 var/
 data/
+mongo_data/
 
 # IDE
 .vscode

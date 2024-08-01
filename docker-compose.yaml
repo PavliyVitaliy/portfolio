@@ -18,6 +18,12 @@ services:
     container_name: portfolio-mongo-db
     ports:
       - 27017:27017
+    restart: always
+    env_file:
+      - backend/app/.env
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
     networks:
       - portfolio.network
 
@@ -57,3 +63,6 @@ services:
 networks:
   portfolio.network:
     driver: bridge
+
+volumes:
+  mongo_data:
