@@ -56,6 +56,10 @@ class AccessToken(BaseModel):
     verification_token_secret: str
 
 
+class SuperUser(BaseModel):
+    email: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -69,6 +73,7 @@ class Settings(BaseSettings):
     db: PostgresConfig
     access_token: AccessToken
     mongo: MongoConfig
+    super_user: SuperUser
 
 
 settings = Settings()
