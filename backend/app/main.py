@@ -4,13 +4,14 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from api import router as api_router
-from core.models import db_helper, mongo_database_ping
+from core.models import db_helper, mongo_database_ping, mongo_configure_database
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
     await mongo_database_ping()
+    await mongo_configure_database()
     yield
     # shutdown
     await db_helper.dispose()

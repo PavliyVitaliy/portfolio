@@ -2,6 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from motor.core import AgnosticDatabase
 from odmantic import AIOEngine
 from core.config import settings
+from core.models.experience import Experience
 
 
 class _MongoClientSingleton:
@@ -29,3 +30,7 @@ def get_engine() -> AIOEngine:
 
 async def mongo_database_ping():
     await mongo_database().command("ping")
+
+
+async def mongo_configure_database():
+    await get_engine().configure_database([Experience])
