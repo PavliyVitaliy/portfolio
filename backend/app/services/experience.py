@@ -1,5 +1,5 @@
 from typing import List
-
+from fastapi import HTTPException
 from odmantic import AIOEngine
 
 from core.models import (
@@ -41,6 +41,19 @@ class ExperienceService:
             experience_create
         )
         db_experience = await self.__engine.save(experience_model)
+        return str(db_experience.id)
+
+    async def delete_experience(
+            self,
+            user_id: str,
+    ) -> ExperienceId:
+        db_experience = await self.__engine.find_one(
+            ExperienceModel,
+            ExperienceModel.user_id == user_id,
+        )
+        if db_experience is None:
+            raise HTTPException(404)
+        await self.__engine.delete(db_experience)
         return str(db_experience.id)
 
     @staticmethod

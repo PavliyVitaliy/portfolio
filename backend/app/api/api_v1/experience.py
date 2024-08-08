@@ -76,3 +76,16 @@ async def create_free_experience(
     )
     return experience_id
 
+
+@router.delete("/free", response_model=ExperienceId)
+async def delete_free_experience(
+    session: Annotated[
+        AsyncSession,
+        Depends(db_helper.session_getter)
+    ],
+):
+    super_user = await get_super_user(session=session)
+    experience_id: ExperienceId = await ExperienceService().delete_experience(
+        str(super_user.id),
+    )
+    return experience_id
