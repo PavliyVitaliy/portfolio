@@ -6,7 +6,7 @@ from odmantic import (
 )
 
 
-class WorkExperience(EmbeddedModel):
+class WorkExperienceModel(EmbeddedModel):
     company_name: str = Field(...)
     company_description: str = Field(...)
     position: str = Field(...)
@@ -17,7 +17,7 @@ class WorkExperience(EmbeddedModel):
     achievements: Optional[List[str]] = None
 
 
-class ContactInformation(EmbeddedModel):
+class ContactInformationModel(EmbeddedModel):
     first_name: str = Field(...)
     last_name: str = Field(...)
     email: str = Field(...)
@@ -30,12 +30,12 @@ class ContactInformation(EmbeddedModel):
     website: Optional[str] = None
 
 
-class Experience(Model):
+class ExperienceModel(Model):
     user_id: str = Field(unique=True)
-    title: str = Field(...)  # "Senior Full-Stack Software Engineer"
-    contact_information: ContactInformation
+    title: str = Field(...)
+    contact_information: ContactInformationModel
     professional_summary: str = Field(...)
-    work_experience: List[WorkExperience]
+    work_experience: List[WorkExperienceModel]
     education: Optional[List[str]] = None
     certifications: Optional[List[str]] = None
     publications: Optional[List[str]] = None

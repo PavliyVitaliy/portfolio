@@ -3,16 +3,17 @@ from fastapi import HTTPException
 from odmantic import AIOEngine
 
 from core.models import (
-    Experience as ExperienceModel,
-    ContactInformation as ContactInformationModel,
-    WorkExperience as WorkExperienceModel,
+    ExperienceModel,
+    ContactInformationModel,
+    WorkExperienceModel,
     mongo_helper,
 )
 from core.schemas.experience import (
-    ExperienceCreate,
-    ExperienceRead,
-    ContactInformation as ContactInformationSchema,
-    WorkExperience as WorkExperienceSchema,
+    ExperienceCreateSchema,
+    ExperienceReadSchema,
+    ContactInformationSchema,
+    WorkExperienceSchema,
+    ExperienceUpdateSchema,
 )
 from core.types.experience_id import ExperienceId
 from utils import singleton
@@ -24,17 +25,19 @@ class ExperienceService:
     def __init__(self):
         self.__engine: AIOEngine = mongo_helper.get_engine()
 
-    async def get_experience(self, user_id: str) -> ExperienceRead | None:
+    async def get_experience(self, user_id: str) -> ExperienceReadSchema:
         db_experience: ExperienceModel = await self.__engine.find_one(
             ExperienceModel,
             ExperienceModel.user_id == user_id,
         )
-        return self.__return_experience_schema(db_experience) if db_experience else None
+        if db_experience is None:
+            raise HTTPException(404)
+        return self.__return_experience_schema(db_experience)
 
     async def create_experience(
             self,
             user_id: str,
-            experience_create: ExperienceCreate,
+            experience_create: ExperienceCreateSchema,
     ) -> ExperienceId:
         experience_model: ExperienceModel = self.__return_experience_model(
             user_id,
@@ -56,10 +59,25 @@ class ExperienceService:
         await self.__engine.delete(db_experience)
         return str(db_experience.id)
 
+    async def update_experience(
+            self,
+            user_id: str,
+            patch: ExperienceUpdateSchema,
+    ) -> ExperienceId:
+        db_experience = await self.__engine.find_one(
+            ExperienceModel,
+            ExperienceModel.user_id == user_id,
+            )
+        if db_experience is None:
+            raise HTTPException(404)
+        db_experience.model_update(patch)
+        db_experience = await self.__engine.save(db_experience)
+        return str(db_experience.id)
+
     @staticmethod
     def __return_experience_model(
             user_id: str,
-            experience_create: ExperienceCreate,
+            experience_create: ExperienceCreateSchema,
     ) -> ExperienceModel:
         contact_information_model: ContactInformationModel = ContactInformationModel(
             first_name=experience_create.contact_information.first_name,
@@ -83,7 +101,7 @@ class ExperienceService:
         return experience_model
 
     @staticmethod
-    def __return_experience_schema(db_experience: ExperienceModel) -> ExperienceRead:
+    def __return_experience_schema(db_experience: ExperienceModel) -> ExperienceReadSchema:
         contact_information: ContactInformationSchema = ContactInformationSchema(
             first_name=db_experience.contact_information.first_name,
             last_name=db_experience.contact_information.first_name,
@@ -96,8 +114,8 @@ class ExperienceService:
                 position=item.position,
             ) for item in db_experience.work_experience
         ]
-        experience_read: ExperienceRead = ExperienceRead(
-            id=db_experience.id,
+        experience_read: ExperienceReadSchema = ExperienceReadSchema(
+            id=str(db_experience.id),
             user_id=db_experience.user_id,
             title=db_experience.title,
             contact_information=contact_information,

@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
-class ContactInformation(BaseModel):
-    first_name: str
-    last_name: str
-    email: str
+class ContactInformationBaseSchema(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
     phone_number: Optional[str] = None
     linkedin: Optional[str] = None
     twitter: Optional[str] = None
@@ -15,10 +15,16 @@ class ContactInformation(BaseModel):
     website: Optional[str] = None
 
 
-class WorkExperience(BaseModel):
-    company_name: str
-    company_description: str
-    position: str
+class ContactInformationSchema(ContactInformationBaseSchema):
+    first_name: str
+    last_name: str
+    email: str
+
+
+class WorkExperienceBaseSchema(BaseModel):
+    company_name: Optional[str] = None
+    company_description: Optional[str] = None
+    position: Optional[str] = None
     location: Optional[str] = None
     Type: Optional[str] = None
     start_date: Optional[str] = None
@@ -26,12 +32,18 @@ class WorkExperience(BaseModel):
     achievements: Optional[List[str]] = None
 
 
-class ExperienceBase(BaseModel):
-    user_id: str
-    title: str  # "Senior Full-Stack Software Engineer"
-    contact_information: ContactInformation
-    professional_summary: str
-    work_experience: List[WorkExperience]
+class WorkExperienceSchema(WorkExperienceBaseSchema):
+    company_name: str
+    company_description: str
+    position: str
+
+
+class ExperienceBaseSchema(BaseModel):
+    user_id: Optional[str] = None
+    title: Optional[str] = None
+    contact_information: Optional[ContactInformationBaseSchema] = None
+    professional_summary: Optional[str] = None
+    work_experience: Optional[List[WorkExperienceBaseSchema]]
     education: Optional[List[str]] = None
     certifications: Optional[List[str]] = None
     publications: Optional[List[str]] = None
@@ -39,9 +51,21 @@ class ExperienceBase(BaseModel):
     interests: Optional[List[str]] = None
 
 
-class ExperienceCreate(ExperienceBase):
+class ExperienceSchema(ExperienceBaseSchema):
+    user_id: str
+    title: str
+    contact_information: ContactInformationSchema
+    professional_summary: str
+    work_experience: List[WorkExperienceSchema]
+
+
+class ExperienceCreateSchema(ExperienceSchema):
     pass
 
 
-class ExperienceRead(ExperienceBase):
+class ExperienceReadSchema(ExperienceSchema):
     id: str
+
+
+class ExperienceUpdateSchema(ExperienceBaseSchema):
+    pass
