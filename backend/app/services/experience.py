@@ -11,8 +11,8 @@ from core.models import (
 from core.schemas.experience import (
     ExperienceCreate,
     ExperienceRead,
-    ContactInformation as ContactInformationSchem,
-    WorkExperience as WorkExperienceSchem,
+    ContactInformation as ContactInformationSchema,
+    WorkExperience as WorkExperienceSchema,
 )
 from core.types.experience_id import ExperienceId
 from utils import singleton
@@ -29,7 +29,7 @@ class ExperienceService:
             ExperienceModel,
             ExperienceModel.user_id == user_id,
         )
-        return self.__return_experience_schem(db_experience) if db_experience else None
+        return self.__return_experience_schema(db_experience) if db_experience else None
 
     async def create_experience(
             self,
@@ -83,14 +83,14 @@ class ExperienceService:
         return experience_model
 
     @staticmethod
-    def __return_experience_schem(db_experience: ExperienceModel) -> ExperienceRead:
-        contact_information: ContactInformationSchem = ContactInformationSchem(
+    def __return_experience_schema(db_experience: ExperienceModel) -> ExperienceRead:
+        contact_information: ContactInformationSchema = ContactInformationSchema(
             first_name=db_experience.contact_information.first_name,
             last_name=db_experience.contact_information.first_name,
             email=db_experience.contact_information.email,
         )
-        work_experience: List[WorkExperienceSchem] = [
-            WorkExperienceSchem(
+        work_experience: List[WorkExperienceSchema] = [
+            WorkExperienceSchema(
                 company_name=item.company_name,
                 company_description=item.company_description,
                 position=item.position,
