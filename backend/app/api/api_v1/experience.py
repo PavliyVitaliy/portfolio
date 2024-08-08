@@ -61,7 +61,7 @@ async def get_free_experience(
     return experience
 
 
-@router.post("/free", response_model=ExperienceId)
+@router.put("/free", response_model=ExperienceId)
 async def create_free_experience(
     session: Annotated[
         AsyncSession,
