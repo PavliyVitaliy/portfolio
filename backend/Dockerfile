@@ -23,7 +23,7 @@ RUN pip install "poetry==$POETRY_VERSION"
 # Python requirements install via poetry
 WORKDIR /code/backend/app
 COPY backend/poetry.lock backend/pyproject.toml ./
-RUN poetry install
+RUN poetry install --without dev,test --no-interaction --no-ansi
 
 COPY ./ /code/backend
 
