@@ -1,0 +1,67 @@
+version: "3"
+services:
+  portfolio-postgres-db-test:
+    image: postgres:14
+    container_name: portfolio-postgres-db-test
+    ports:
+      - 5433:5432
+    restart: always
+    env_file:
+      - backend/app/.env.test
+    networks:
+      - portfolio.network.test
+    volumes:
+      - ./var/postgres/data:/var/lib/postgresql/data
+
+  portfolio-mongo-db-test:
+    image: mongo
+    container_name: portfolio-mongo-db-test
+    ports:
+      - 27018:27017
+    restart: always
+    env_file:
+      - backend/app/.env.test
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    networks:
+      - portfolio.network.test
+
+  portfolio-backend-test:
+    container_name: portfolio-backend-test
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile.test
+    env_file:
+      - backend/app/.env.test
+    volumes:
+      - ./backend:/code/backend
+    depends_on:
+      - portfolio-postgres-db-test
+      - portfolio-mongo-db-test
+    networks:
+      - portfolio.network.test
+    ports:
+      - 8001:8001
+
+  portfolio-proxy-test:
+    container_name: portfolio-proxy-test
+    build:
+      context: .
+      dockerfile: ./nginx/proxy.Dockerfile.test
+    depends_on:
+      - portfolio-backend-test
+    networks:
+      - portfolio.network.test
+    volumes:
+      - ./nginx/nginx.proxy.conf:/etc/nginx/nginx.conf
+    ports:
+      - 81:80
+    restart: always
+
+networks:
+  portfolio.network.test:
+    driver: bridge
+
+volumes:
+  mongo_data:
