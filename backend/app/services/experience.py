@@ -31,24 +31,24 @@ class ExperienceService:
             ExperienceModel.user_id == user_id,
         )
         if db_experience is None:
-            raise HTTPException(404)
+            raise HTTPException(404, "Experience not found by user id")
         return self.__return_experience_schema(db_experience)
 
     async def create_experience(
-            self,
-            user_id: str,
-            experience_create: ExperienceCreateSchema,
+        self,
+        user_id: str,
+        experience_create: ExperienceCreateSchema,
     ) -> ExperienceId:
         experience_model: ExperienceModel = self.__return_experience_model(
             user_id,
-            experience_create
+            experience_create,
         )
         db_experience = await self.__engine.save(experience_model)
         return str(db_experience.id)
 
     async def delete_experience(
-            self,
-            user_id: str,
+        self,
+        user_id: str,
     ) -> ExperienceId:
         db_experience = await self.__engine.find_one(
             ExperienceModel,
@@ -60,14 +60,14 @@ class ExperienceService:
         return str(db_experience.id)
 
     async def update_experience(
-            self,
-            user_id: str,
-            patch: ExperienceUpdateSchema,
+        self,
+        user_id: str,
+        patch: ExperienceUpdateSchema,
     ) -> ExperienceId:
         db_experience = await self.__engine.find_one(
             ExperienceModel,
             ExperienceModel.user_id == user_id,
-            )
+        )
         if db_experience is None:
             raise HTTPException(404)
         db_experience.model_update(patch)
@@ -76,8 +76,8 @@ class ExperienceService:
 
     @staticmethod
     def __return_experience_model(
-            user_id: str,
-            experience_create: ExperienceCreateSchema,
+        user_id: str,
+        experience_create: ExperienceCreateSchema,
     ) -> ExperienceModel:
         contact_information_model: ContactInformationModel = ContactInformationModel(
             first_name=experience_create.contact_information.first_name,
@@ -89,7 +89,8 @@ class ExperienceService:
                 company_name=item.company_name,
                 company_description=item.company_description,
                 position=item.position,
-            ) for item in experience_create.work_experience
+            )
+            for item in experience_create.work_experience
         ]
         experience_model: ExperienceModel = ExperienceModel(
             user_id=user_id,
@@ -101,7 +102,9 @@ class ExperienceService:
         return experience_model
 
     @staticmethod
-    def __return_experience_schema(db_experience: ExperienceModel) -> ExperienceReadSchema:
+    def __return_experience_schema(
+        db_experience: ExperienceModel,
+    ) -> ExperienceReadSchema:
         contact_information: ContactInformationSchema = ContactInformationSchema(
             first_name=db_experience.contact_information.first_name,
             last_name=db_experience.contact_information.first_name,
@@ -112,7 +115,8 @@ class ExperienceService:
                 company_name=item.company_name,
                 company_description=item.company_description,
                 position=item.position,
-            ) for item in db_experience.work_experience
+            )
+            for item in db_experience.work_experience
         ]
         experience_read: ExperienceReadSchema = ExperienceReadSchema(
             id=str(db_experience.id),
