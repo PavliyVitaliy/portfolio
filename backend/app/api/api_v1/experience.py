@@ -31,10 +31,10 @@ router = APIRouter(
 
 @router.get("")
 def get_user_experience(
-        user: Annotated[
-            User,
-            Depends(current_active_user),
-        ],
+    user: Annotated[
+        User,
+        Depends(current_active_user),
+    ],
 ):
     return {
         "user": UserRead.model_validate(user),
@@ -57,12 +57,11 @@ def get_superuser_experience(
 
 @router.get("/free", response_model=ExperienceReadSchema)
 async def get_free_experience(
-    session: Annotated[
-        AsyncSession,
-        Depends(db_helper.session_getter)
-    ],
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
     super_user: User = await get_super_user(session=session)
+    if super_user is None:
+        raise HTTPException(404, "Superuser not found")
     experience: ExperienceReadSchema = await ExperienceService().get_experience(
         str(super_user.id),
     )
@@ -71,10 +70,7 @@ async def get_free_experience(
 
 @router.put("/free", response_model=ExperienceId)
 async def create_free_experience(
-    session: Annotated[
-        AsyncSession,
-        Depends(db_helper.session_getter)
-    ],
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     experience_create: ExperienceCreateSchema,
 ):
     super_user: User = await get_super_user(session=session)
@@ -87,10 +83,7 @@ async def create_free_experience(
 
 @router.delete("/free", response_model=ExperienceId)
 async def delete_free_experience(
-    session: Annotated[
-        AsyncSession,
-        Depends(db_helper.session_getter)
-    ],
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
     super_user: User = await get_super_user(session=session)
     experience_id: ExperienceId = await ExperienceService().delete_experience(
@@ -101,10 +94,7 @@ async def delete_free_experience(
 
 @router.patch("/free", response_model=ExperienceId)
 async def update_free_experience(
-    session: Annotated[
-        AsyncSession,
-        Depends(db_helper.session_getter)
-    ],
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     patch: ExperienceUpdateSchema,
 ):
     super_user: User = await get_super_user(session=session)
