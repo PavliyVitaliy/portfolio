@@ -5,6 +5,8 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
+from utils import get_env_file
+
 
 class RunConfig(BaseModel):
     host: str = "0.0.0.0"
@@ -62,8 +64,9 @@ class SuperUser(BaseModel):
 
 
 class Settings(BaseSettings):
+    current_env_file: str = get_env_file()
     model_config = SettingsConfigDict(
-        env_file=(".env.template", ".env"),
+        env_file=(".env.template", current_env_file),
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
