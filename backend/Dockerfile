@@ -15,7 +15,10 @@ ENV PYTHONUNBUFFERED=1 \
     # poetry
     POETRY_VERSION=1.8.3 \
     POETRY_VIRTUALENVS_CREATE=false \
-    POETRY_CACHE_DIR='/var/cache/pypoetry'
+    POETRY_CACHE_DIR='/var/cache/pypoetry' \
+    \
+    # evn
+    ENVIRONMENT=development
 
 # Install poetry:
 RUN pip install "poetry==$POETRY_VERSION"
