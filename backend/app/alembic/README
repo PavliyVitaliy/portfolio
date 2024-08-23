@@ -1,1 +1,19 @@
 Generic single-database configuration with an async dbapi.
+
+# Generate new version
+alembic revision --autogenerate -m "create access_tokens table"
+
+# Upgrade to the head
+alembic upgrade head
+
+# Upgrade
+alembic upgrade
+
+# Downgrade to the base
+alembic downgrade base
+
+# Downgrade
+alembic downgrade
+
+# Current revision
+alembic current
