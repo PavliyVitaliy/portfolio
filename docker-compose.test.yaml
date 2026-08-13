@@ -42,7 +42,7 @@ services:
     networks:
       - portfolio.network.test
     ports:
-      - 8001:8001
+      - 8001:8000
 
   portfolio-proxy-test:
     container_name: portfolio-proxy-test
