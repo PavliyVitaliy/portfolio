@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
-from core.models import EXPERIENCE_COLLECTION, mongo_database
+from core.models import EXPERIENCE_COLLECTION, ExperienceModel, mongo_database
 from core.schemas.experience import ExperienceCreateSchema, ExperienceReadSchema, ExperienceUpdateSchema
 from core.types.experience_id import ExperienceId
 from utils import singleton
@@ -23,8 +23,7 @@ class ExperienceService:
     async def create_experience(
         self, user_id: str, experience_create: ExperienceCreateSchema
     ) -> ExperienceId:
-        document = experience_create.model_dump(mode="json")
-        document["user_id"] = user_id
+        document = ExperienceModel.from_create(user_id, experience_create).to_document()
         try:
             result = await self.collection.insert_one(document)
         except DuplicateKeyError as error:
@@ -55,6 +54,4 @@ class ExperienceService:
 
     @staticmethod
     def _to_schema(document: dict) -> ExperienceReadSchema:
-        document = dict(document)
-        document["id"] = str(document.pop("_id"))
-        return ExperienceReadSchema.model_validate(document)
+        return ExperienceModel.from_document(document).to_read_schema()

@@ -5,6 +5,8 @@ import pytest
 from httpx import AsyncClient
 
 from api.api_v1 import experience as experience_api
+from core.models import ExperienceModel
+from core.schemas.experience import ExperienceCreateSchema
 from core.schemas.experience import ExperienceReadSchema
 from services.experience import ExperienceService
 
@@ -37,6 +39,18 @@ def test_mongo_document_is_mapped_to_api_schema(experience_payload):
 
     assert experience.id == "experience-id"
     assert experience.contact_information.last_name == "Developer"
+
+
+def test_domain_model_creates_mongo_document(experience_payload):
+    experience = ExperienceModel.from_create(
+        "actual-user-id", ExperienceCreateSchema(**experience_payload)
+    )
+
+    document = experience.to_document()
+
+    assert "id" not in document
+    assert document["user_id"] == "actual-user-id"
+    assert document["work_experience"][0]["position"] == "Python Developer"
 
 
 @pytest.fixture
