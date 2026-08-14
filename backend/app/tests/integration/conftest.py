@@ -1,51 +1,42 @@
-import asyncio
+from collections.abc import AsyncIterator
+from uuid import uuid4
+
 import pytest
 import pytest_asyncio
-import alembic
-from alembic.config import Config
-from typing import AsyncIterator, Generator
-from httpx import AsyncClient
-from fastapi.testclient import TestClient
+from fastapi import FastAPI
+from httpx import ASGITransport, AsyncClient
 
-from actions.create_superuser import create_superuser
-from main import app
-from core.config import settings
-from core.models.mongo_helper import mongo_database, _MongoClientSingleton
+from api.api_v1.experience import router as experience_router
+from core.models import User, db_helper
 
 
-@pytest_asyncio.fixture(scope="session")
-async def client() -> AsyncIterator[AsyncClient]:
-    async with AsyncClient(app=app, base_url="http://test-server") as client:
+@pytest.fixture
+def user() -> User:
+    return User(
+        id=uuid4(),
+        email="admin@example.com",
+        hashed_password="not-used-in-api-tests",
+        is_active=True,
+        is_superuser=True,
+        is_verified=True,
+    )
+
+
+@pytest.fixture
+def api_app() -> AsyncIterator[FastAPI]:
+    app = FastAPI()
+    app.include_router(experience_router, prefix="/api/v1")
+
+    async def get_test_session() -> AsyncIterator[object]:
+        yield object()
+
+    app.dependency_overrides[db_helper.session_getter] = get_test_session
+    yield app
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def client(api_app: FastAPI) -> AsyncIterator[AsyncClient]:
+    transport = ASGITransport(app=api_app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         yield client
-
-
-# @pytest.fixture(scope="session")
-# def client(db) -> Generator:
-#     with TestClient(app) as test_client:
-#         yield test_client
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    policy = asyncio.get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest_asyncio.fixture(scope="session")
-async def mongo_db() -> Generator:
-    mongo_db = mongo_database()
-    _MongoClientSingleton.instance.mongo_client.get_io_loop = asyncio.get_event_loop
-    # await init_db(db)  # TODO
-    yield mongo_db
-
-
-@pytest_asyncio.fixture(scope="session")
-async def postgres_db() -> Generator:
-    print(postgres_db)
-    config = Config("alembic.ini")
-    alembic.command.upgrade(config, "head")
-    await create_superuser()
-    yield
-    alembic.command.downgrade(config, "base")
