@@ -43,7 +43,7 @@ class ExperienceBaseSchema(BaseModel):
     title: Optional[str] = None
     contact_information: Optional[ContactInformationBaseSchema] = None
     professional_summary: Optional[str] = None
-    work_experience: Optional[List[WorkExperienceBaseSchema]]
+    work_experience: Optional[List[WorkExperienceBaseSchema]] = None
     education: Optional[List[str]] = None
     certifications: Optional[List[str]] = None
     publications: Optional[List[str]] = None

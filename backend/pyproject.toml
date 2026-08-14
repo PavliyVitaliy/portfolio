@@ -9,27 +9,23 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "0.112.0"
-uvicorn = "0.30.6"
-envparse = "0.2.0"
-motor = {extras = ["srv"], version = "^3.5.1"}
-pydentic = {extras = ["email"], version = "^0.0.1.dev3"}
-pydantic-settings = "^2.4.0"
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.32"}
-asyncpg = "^0.29.0"
-alembic = "^1.13.2"
-fastapi-users = {extras = ["sqlalchemy"], version = "^13.0.0"}
-odmantic = "^1.0.2"
+fastapi = "^0.141.1"
+uvicorn = "^0.52.0"
+pydantic-settings = "^2.15.0"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.52"}
+asyncpg = "^0.31.0"
+pymongo = {extras = ["srv"], version = "^4.17.0"}
+alembic = "^1.19.1"
+fastapi-users = {extras = ["sqlalchemy"], version = "^15.0.5"}
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.4.2"
+black = "^26.5.1"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^8.3.2"
-requests = "^2.32.3"
-httpx = "^0.27.0"
-pytest-asyncio = "^0.23.8"
+pytest = "^9.1.1"
+httpx = "^0.28.1"
+pytest-asyncio = "^1.4.0"
 
 [tool.pytest.ini_options]
 pythonpath = "app"

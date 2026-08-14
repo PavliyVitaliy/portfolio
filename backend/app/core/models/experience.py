@@ -1,43 +1,76 @@
-from typing import List, Optional
-from odmantic import (
-    Model,
-    Field,
-    EmbeddedModel,
-)
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from core.schemas.experience import ExperienceCreateSchema, ExperienceReadSchema
 
 
-class WorkExperienceModel(EmbeddedModel):
-    company_name: str = Field(...)
-    company_description: str = Field(...)
-    position: str = Field(...)
-    location: Optional[str] = None
-    Type: Optional[str] = None
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    achievements: Optional[List[str]] = None
+EXPERIENCE_COLLECTION = "experience"
 
 
-class ContactInformationModel(EmbeddedModel):
-    first_name: str = Field(...)
-    last_name: str = Field(...)
-    email: str = Field(...)
-    phone_number: Optional[str] = None
-    linkedin: Optional[str] = None
-    twitter: Optional[str] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    website: Optional[str] = None
+class WorkExperienceModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    company_name: str
+    company_description: str
+    position: str
+    location: str | None = None
+    Type: str | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    achievements: list[str] | None = None
 
 
-class ExperienceModel(Model):
-    user_id: str = Field(unique=True)
-    title: str = Field(...)
+class ContactInformationModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    first_name: str
+    last_name: str
+    email: str
+    phone_number: str | None = None
+    linkedin: str | None = None
+    twitter: str | None = None
+    address: str | None = None
+    city: str | None = None
+    state: str | None = None
+    website: str | None = None
+
+
+class ExperienceModel(BaseModel):
+    """Validated domain representation of an experience MongoDB document."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    id: str | None = Field(default=None)
+    user_id: str
+    title: str
     contact_information: ContactInformationModel
-    professional_summary: str = Field(...)
-    work_experience: List[WorkExperienceModel]
-    education: Optional[List[str]] = None
-    certifications: Optional[List[str]] = None
-    publications: Optional[List[str]] = None
-    skills: Optional[List[str]] = None
-    interests: Optional[List[str]] = None
+    professional_summary: str
+    work_experience: list[WorkExperienceModel]
+    education: list[str] | None = None
+    certifications: list[str] | None = None
+    publications: list[str] | None = None
+    skills: list[str] | None = None
+    interests: list[str] | None = None
+
+    @classmethod
+    def from_create(cls, user_id: str, experience: ExperienceCreateSchema) -> "ExperienceModel":
+        data = experience.model_dump(exclude={"user_id"})
+        return cls(user_id=user_id, **data)
+
+    @classmethod
+    def from_document(cls, document: dict[str, Any]) -> "ExperienceModel":
+        data = dict(document)
+        data["id"] = str(data.pop("_id"))
+        return cls.model_validate(data)
+
+    def to_document(self) -> dict[str, Any]:
+        """Return a MongoDB-ready document without its database-generated id."""
+        return self.model_dump(exclude={"id"}, mode="json")
+
+    def to_read_schema(self) -> ExperienceReadSchema:
+        if self.id is None:
+            raise ValueError("Experience id is required for an API response")
+        return ExperienceReadSchema.model_validate(
+            {"id": self.id, **self.model_dump(exclude={"id"}, mode="json")}
+        )

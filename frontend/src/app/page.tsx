@@ -2,6 +2,8 @@ import { WorkExperience } from "@/api/experience/experience";
 import { getExperience } from "@/api/experience/getExperience";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let experience = await getExperience()
   let workExperience = experience.work_experience
