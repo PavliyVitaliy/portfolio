@@ -6,6 +6,7 @@ from httpx import AsyncClient
 
 from api.api_v1 import experience as experience_api
 from core.schemas.experience import ExperienceReadSchema
+from services.experience import ExperienceService
 
 
 @pytest.fixture
@@ -27,6 +28,15 @@ def experience_payload() -> dict:
             }
         ],
     }
+
+
+def test_mongo_document_is_mapped_to_api_schema(experience_payload):
+    document = {"_id": "experience-id", **experience_payload}
+
+    experience = ExperienceService()._to_schema(document)
+
+    assert experience.id == "experience-id"
+    assert experience.contact_information.last_name == "Developer"
 
 
 @pytest.fixture

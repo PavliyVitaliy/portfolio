@@ -11,13 +11,12 @@ package-mode = false
 python = "^3.12"
 fastapi = "^0.141.1"
 uvicorn = "^0.52.0"
-motor = {extras = ["srv"], version = "^3.7.1"}
 pydantic-settings = "^2.15.0"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.52"}
 asyncpg = "^0.31.0"
+pymongo = {extras = ["srv"], version = "^4.17.0"}
 alembic = "^1.19.1"
 fastapi-users = {extras = ["sqlalchemy"], version = "^15.0.5"}
-odmantic = "^1.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
