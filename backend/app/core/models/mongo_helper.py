@@ -1,3 +1,6 @@
+from os import getenv
+from urllib.parse import urlsplit, urlunsplit
+
 from pymongo import ASCENDING, AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
 
@@ -10,8 +13,19 @@ class _MongoClientSingleton:
     def __new__(cls):
         if not hasattr(cls, "instance"):
             cls.instance = super(_MongoClientSingleton, cls).__new__(cls)
-            cls.instance.mongo_client = AsyncMongoClient(settings.mongo.uri)
+            cls.instance.mongo_client = AsyncMongoClient(_mongo_uri())
         return cls.instance
+
+
+def _mongo_uri() -> str:
+    authority_override = getenv("MONGO_URI_AUTHORITY_OVERRIDE")
+    if authority_override is None:
+        return settings.mongo.uri
+
+    uri = urlsplit(settings.mongo.uri)
+    user_info, separator, _ = uri.netloc.rpartition("@")
+    netloc = f"{user_info}@{authority_override}" if separator else authority_override
+    return urlunsplit(uri._replace(netloc=netloc))
 
 
 def mongo_database() -> AsyncDatabase:
@@ -29,5 +43,7 @@ async def mongo_configure_database():
     )
 
 
-def mongo_close() -> None:
-    _MongoClientSingleton().mongo_client.close()
+async def mongo_close() -> None:
+    if hasattr(_MongoClientSingleton, "instance"):
+        await _MongoClientSingleton.instance.mongo_client.close()
+        del _MongoClientSingleton.instance

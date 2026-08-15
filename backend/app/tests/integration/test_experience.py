@@ -5,6 +5,7 @@ import pytest
 from httpx import AsyncClient
 
 from api.api_v1 import experience as experience_api
+from api.api_v1.fastapi_users import current_active_superuser
 from core.models import ExperienceModel
 from core.schemas.experience import ExperienceCreateSchema
 from core.schemas.experience import ExperienceReadSchema
@@ -54,11 +55,8 @@ def test_domain_model_creates_mongo_document(experience_payload):
 
 
 @pytest.fixture
-def mock_superuser(monkeypatch, user):
-    async def get_super_user(*_args, **_kwargs):
-        return user
-
-    monkeypatch.setattr(experience_api, "get_super_user", get_super_user)
+def mock_superuser(api_app, user):
+    api_app.dependency_overrides[current_active_superuser] = lambda: user
     return user
 
 
@@ -75,7 +73,7 @@ async def test_create_experience(client: AsyncClient, mock_superuser, experience
         lambda: SimpleNamespace(create_experience=create_experience),
     )
 
-    response = await client.put("/api/v1/experience/free", json=experience_payload)
+    response = await client.put("/api/v1/experience", json=experience_payload)
 
     assert response.status_code == 200
     assert response.json() == "experience-id"
@@ -110,15 +108,19 @@ async def test_read_update_and_delete_experience(
         ),
     )
 
-    read_response = await client.get("/api/v1/experience/free")
+    read_response = await client.get("/api/v1/experience")
     update_response = await client.patch(
-        "/api/v1/experience/free", json={"title": "Senior Python Developer"}
+        "/api/v1/experience", json={"title": "Senior Python Developer"}
     )
-    delete_response = await client.delete("/api/v1/experience/free")
+    forbidden_update_response = await client.patch(
+        "/api/v1/experience", json={"user_id": str(uuid4())}
+    )
+    delete_response = await client.delete("/api/v1/experience")
 
     assert read_response.status_code == 200
     assert read_response.json()["id"] == "experience-id"
     assert update_response.status_code == 200
     assert update_response.json() == "experience-id"
+    assert forbidden_update_response.status_code == 403
     assert delete_response.status_code == 200
     assert delete_response.json() == "experience-id"
