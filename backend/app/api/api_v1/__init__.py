@@ -9,6 +9,8 @@ from core.config import settings
 from .auth import router as auth_router
 from .users import router as users_router
 from .experience import router as experience_router
+from .profile import router as profile_router
+from .projects import router as projects_router
 from .file import router as file_router
 
 http_bearer = HTTPBearer(auto_error=False)
@@ -21,4 +23,6 @@ router = APIRouter(
 router.include_router(auth_router)
 router.include_router(users_router)
 router.include_router(experience_router)
+router.include_router(profile_router)
+router.include_router(projects_router)
 router.include_router(file_router)

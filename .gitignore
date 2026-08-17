@@ -11,6 +11,10 @@ var/
 data/
 mongo_data/
 
+# Runtime uploads are persisted by the deployment volume, not source-controlled.
+backend/app/files/*
+!backend/app/files/.keep
+
 # IDE
 .vscode
 .idea

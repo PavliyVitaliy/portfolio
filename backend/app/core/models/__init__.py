@@ -11,6 +11,10 @@ __all__ = (
     "WorkExperienceModel",
     "ContactInformationModel",
     "ExperienceModel",
+    "PROFILE_COLLECTION",
+    "ProfileModel",
+    "PROJECTS_COLLECTION",
+    "ProjectModel",
 )
 from .db_helper import db_helper
 from .base import Base
@@ -23,3 +27,5 @@ from .experience import (
     ExperienceModel,
     WorkExperienceModel,
 )
+from .profile import PROFILE_COLLECTION, ProfileModel
+from .project import PROJECTS_COLLECTION, ProjectModel

@@ -41,6 +41,13 @@ async def mongo_configure_database():
         [("user_id", ASCENDING)],
         unique=True,
     )
+    await mongo_database().profile.create_index(
+        [("user_id", ASCENDING)],
+        unique=True,
+    )
+    await mongo_database().projects.create_index(
+        [("user_id", ASCENDING), ("sort_order", ASCENDING)],
+    )
 
 
 async def mongo_close() -> None:
