@@ -37,8 +37,8 @@ export default async function AdminPage() {
   if (backendResponse.status === 403) {
     return (
       <main className="mx-auto grid min-h-screen max-w-2xl content-center px-6 py-12">
-        <h1 className="text-2xl font-semibold">Доступ запрещён</h1>
-        <p className="mt-2 text-muted-foreground">Требуются права администратора.</p>
+        <h1 className="text-2xl font-semibold">Access denied</h1>
+        <p className="mt-2 text-muted-foreground">Administrator access is required.</p>
       </main>
     );
   }
@@ -46,8 +46,8 @@ export default async function AdminPage() {
   if (!backendResponse.ok && backendResponse.status !== 404) {
     return (
       <main className="mx-auto grid min-h-screen max-w-2xl content-center px-6 py-12">
-        <h1 className="text-2xl font-semibold">Не удалось загрузить профиль</h1>
-        <p className="mt-2 text-muted-foreground">Повторите попытку позже.</p>
+        <h1 className="text-2xl font-semibold">Unable to load profile</h1>
+        <p className="mt-2 text-muted-foreground">Please try again later.</p>
       </main>
     );
   }
@@ -65,11 +65,11 @@ export default async function AdminPage() {
     <main className="mx-auto max-w-2xl px-6 py-12">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Админ-панель</h1>
+          <h1 className="text-2xl font-semibold">Admin panel</h1>
           <p className="mt-1 text-muted-foreground">
             {experience
-              ? "Опыт загружен и готов к редактированию."
-              : "Запись опыта ещё не создана."}
+              ? "Experience is loaded and ready to edit."
+              : "No experience record has been created yet."}
           </p>
         </div>
         <LogoutButton />

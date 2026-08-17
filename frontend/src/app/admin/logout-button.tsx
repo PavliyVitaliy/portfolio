@@ -13,7 +13,7 @@ export function LogoutButton() {
 
   return (
     <button className="rounded-md border px-3 py-2 text-sm" onClick={logout} type="button">
-      Выйти
+      Sign out
     </button>
   );
 }

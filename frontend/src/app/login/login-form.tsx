@@ -25,7 +25,7 @@ export function LoginForm() {
 
     setIsSubmitting(false);
     if (!response.ok) {
-      setError("Не удалось войти. Проверьте email и пароль.");
+      setError("Unable to sign in. Check your email and password.");
       return;
     }
 
@@ -47,7 +47,7 @@ export function LoginForm() {
         />
       </label>
       <label className="grid gap-2 text-sm font-medium" htmlFor="password">
-        Пароль
+        Password
         <input
           autoComplete="current-password"
           className="rounded-md border bg-background px-3 py-2"
@@ -63,7 +63,7 @@ export function LoginForm() {
         disabled={isSubmitting}
         type="submit"
       >
-        {isSubmitting ? "Входим..." : "Войти"}
+        {isSubmitting ? "Signing in..." : "Sign in"}
       </button>
     </form>
   );
