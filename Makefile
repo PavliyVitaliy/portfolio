@@ -1,32 +1,29 @@
-### Main commands
+COMPOSE ?= docker compose
 
-# Configure env var
-env:
-	cp -r .env.template .env
+.PHONY: up stop down logs test frontend-build production-up production-stop
 
-# Build and run docker containers 🐳
-docker_build_and_run:
-	docker-compose -f docker-compose.yaml --build
+up:
+	$(COMPOSE) up --detach --build
 
-# Build and run without cache
-docker_clean_build_and_run:
-	docker-compose -f docker-compose.yaml build --no-cache
-	make docker_run
+stop:
+	$(COMPOSE) stop
 
-# Run containers
-docker_run:
-	docker-compose -f docker-compose.yaml up
+down:
+	$(COMPOSE) down
 
-# Stop containers
-docker_stop:
-	docker-compose -f docker-compose.yaml stop
+logs:
+	$(COMPOSE) logs --follow
 
-# Stop and remove containers with volumes
-docker_down_and_clean_volumes:
-	docker-compose -f docker-compose.yaml down -v
+test:
+	$(COMPOSE) -f docker-compose.test.yaml up --detach portfolio-mongo-db-test
+	$(COMPOSE) -f docker-compose.test.yaml run --rm --no-deps --build portfolio-backend-test pytest
+	$(COMPOSE) -f docker-compose.test.yaml stop portfolio-mongo-db-test
 
-# Purge all cached docker data
-docker_prune:
-	docker container prune -f
-	docker image prune --all -f 
-	docker volume prune -f
+frontend-build:
+	cd frontend && npm run build
+
+production-up:
+	$(COMPOSE) -f docker-compose.production.yaml up --detach --build
+
+production-stop:
+	$(COMPOSE) -f docker-compose.production.yaml stop

@@ -1,23 +1,23 @@
-# portfolio - frontend
+# Frontend
 
-My portfolio - FrontEnd
+The Next.js frontend is documented in the repository [README](../README.md).
 
-## Getting Started
+For local development on PowerShell:
 
-First, run the development server:
-
-```bash
+```powershell
+Copy-Item .env.example .env
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+On macOS/Linux:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env
+npm ci
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The app is available at `http://localhost:3000`. `API_BASE_URL` is server-only;
+do not add a `NEXT_PUBLIC_` prefix because the access token must remain inside
+the Next.js BFF.
