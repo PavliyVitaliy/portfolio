@@ -1,0 +1,100 @@
+services:
+  portfolio-postgres-db:
+    image: postgres:14
+    restart: unless-stopped
+    env_file:
+      - ${BACKEND_ENV_FILE:-backend/app/.env.production}
+    volumes:
+      - postgres_production_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio-network
+
+  portfolio-mongo-db:
+    image: mongo:8
+    restart: unless-stopped
+    env_file:
+      - ${BACKEND_ENV_FILE:-backend/app/.env.production}
+    volumes:
+      - mongo_production_data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand(\"ping\")' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio-network
+
+  portfolio-backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ${BACKEND_ENV_FILE:-backend/app/.env.production}
+    volumes:
+      - portfolio_uploads:/code/backend/app/files
+    depends_on:
+      portfolio-postgres-db:
+        condition: service_healthy
+      portfolio-mongo-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/ping')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio-network
+
+  portfolio-frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://portfolio-backend:8000/api/v1
+    depends_on:
+      portfolio-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/api/auth/session').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio-network
+
+  portfolio-proxy:
+    build:
+      context: .
+      dockerfile: ./nginx/proxy.production.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      portfolio-backend:
+        condition: service_healthy
+      portfolio-frontend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/health >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfolio-network
+
+networks:
+  portfolio-network:
+    driver: bridge
+
+volumes:
+  postgres_production_data:
+  mongo_production_data:
+  portfolio_uploads:
