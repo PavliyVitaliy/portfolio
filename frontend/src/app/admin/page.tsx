@@ -5,11 +5,17 @@ import {
   AUTH_COOKIE_NAME,
   authHeaders,
   managementExperienceUrl,
+  managementProfileUrl,
+  managementProjectsUrl,
 } from "@/lib/auth";
 import type { Experience } from "@/api/experience/experience";
+import type { Profile } from "@/api/profile/profile";
+import type { Project } from "@/api/projects/project";
 
 import { ExperienceEditor } from "./experience-editor";
 import { LogoutButton } from "./logout-button";
+import { ProfileEditor } from "./profile-editor";
+import { ProjectsEditor } from "./projects-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +55,12 @@ export default async function AdminPage() {
   const experience = backendResponse.ok
     ? ((await backendResponse.json()) as Experience)
     : null;
+  const [profileResponse, projectsResponse] = await Promise.all([
+    fetch(managementProfileUrl, { headers: authHeaders(accessToken), cache: "no-store" }),
+    fetch(managementProjectsUrl, { headers: authHeaders(accessToken), cache: "no-store" }),
+  ]);
+  const profile = profileResponse.ok ? (await profileResponse.json()) as Profile : null;
+  const projects = projectsResponse.ok ? (await projectsResponse.json()) as Project[] : [];
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
       <header className="flex items-center justify-between gap-4">
@@ -62,6 +74,8 @@ export default async function AdminPage() {
         </div>
         <LogoutButton />
       </header>
+      <ProfileEditor initialProfile={profile} />
+      <ProjectsEditor initialProjects={projects} />
       <ExperienceEditor initialExperience={experience} />
     </main>
   );

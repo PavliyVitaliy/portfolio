@@ -9,6 +9,9 @@ if (!apiBaseUrl) {
 }
 
 export const managementExperienceUrl = `${apiBaseUrl}/experience`;
+export const managementProfileUrl = `${apiBaseUrl}/profile`;
+export const managementProjectsUrl = `${apiBaseUrl}/projects`;
+export const managementProfileImageUrl = `${apiBaseUrl}/file/profile`;
 
 export async function loginToBackend(email: string, password: string) {
   return fetch(`${apiBaseUrl}/auth/login`, {
