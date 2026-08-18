@@ -73,7 +73,10 @@ async def test_create_experience(client: AsyncClient, mock_superuser, experience
         lambda: SimpleNamespace(create_experience=create_experience),
     )
 
-    response = await client.put("/api/v1/experience", json=experience_payload)
+    payload_without_user_id = dict(experience_payload)
+    payload_without_user_id.pop("user_id")
+
+    response = await client.put("/api/v1/experience", json=payload_without_user_id)
 
     assert response.status_code == 200
     assert response.json() == "experience-id"

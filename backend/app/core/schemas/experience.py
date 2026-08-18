@@ -60,7 +60,7 @@ class ExperienceSchema(ExperienceBaseSchema):
 
 
 class ExperienceCreateSchema(ExperienceSchema):
-    pass
+    user_id: Optional[str] = None
 
 
 class ExperienceReadSchema(ExperienceSchema):
