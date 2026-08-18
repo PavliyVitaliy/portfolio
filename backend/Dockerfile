@@ -28,6 +28,6 @@ WORKDIR /code/backend/app
 COPY backend/poetry.lock backend/pyproject.toml ./
 RUN poetry install --without dev,test --no-interaction --no-ansi
 
-COPY ./ /code/backend
+COPY backend/app /code/backend/app
 
 CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0"]
