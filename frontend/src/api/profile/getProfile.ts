@@ -14,5 +14,5 @@ export async function getProfile(): Promise<Profile | null> {
 }
 
 export function profileImageUrl(filename?: string | null) {
-  return filename ? `${API_BASE_URL}/file/profile/${encodeURIComponent(filename)}` : null;
+  return filename ? `/api/v1/file/profile/${encodeURIComponent(filename)}` : null;
 }
