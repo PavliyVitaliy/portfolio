@@ -12,6 +12,8 @@ jobs:
   frontend:
     name: Frontend build and lint
     runs-on: ubuntu-latest
+    env:
+      API_BASE_URL: http://portfolio-backend:8000/api/v1
     defaults:
       run:
         working-directory: frontend
@@ -45,4 +47,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate Compose configuration
-        run: docker compose --env-file .env.production.example -f docker-compose.production.yaml config --quiet
+        run: BACKEND_ENV_FILE=.env.production.example docker compose --env-file .env.production.example -f docker-compose.production.yaml config --quiet
