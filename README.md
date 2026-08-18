@@ -100,7 +100,7 @@ Backend integration tests use an isolated MongoDB volume and do not touch the
 development database:
 
 ```bash
-docker compose -f docker-compose.test.yaml up --detach portfolio-mongo-db-test
+docker compose -f docker-compose.test.yaml up --detach --wait portfolio-mongo-db-test
 docker compose -f docker-compose.test.yaml run --rm --no-deps --build portfolio-backend-test pytest
 docker compose -f docker-compose.test.yaml stop portfolio-mongo-db-test
 ```
@@ -111,6 +111,29 @@ Build the frontend as it will run in production:
 cd frontend
 npm run build
 ```
+
+## Continuous integration
+
+GitHub Actions runs on pushes to `main` and pull requests. It checks the
+frontend lint/build, the isolated backend API integration tests, and validates
+the production Compose configuration. Deployment remains a separate manual
+step on the VPS; a successful CI run does not change production.
+
+## External uptime monitoring
+
+Container health checks restart failed containers, but they cannot notify you
+when the VPS, DNS, or TLS is unavailable. Configure an independent HTTP(S)
+monitor after the first deployment. A free [UptimeRobot plan](https://help.uptimerobot.com/en/articles/11604710-who-should-use-uptimerobot-s-free-plan)
+currently checks up to 50 monitors every five minutes.
+
+Create these two HTTP(S) monitors and enable email alerts:
+
+- `Portfolio home` — `https://vitaliipavlii.com/` — expect HTTP 200
+- `Portfolio health` — `https://vitaliipavlii.com/health` — expect HTTP 200
+  and the response body `healthy`
+
+Use the service dashboard to pause monitors during planned deployments. Do not
+place monitoring API keys in this repository or in the VPS Compose file.
 
 ## Production container stack
 
@@ -149,6 +172,55 @@ in named Docker volumes. Back up all three before upgrades or server changes.
 Caddy automatically requests certificates when DNS for both domains resolves to
 the VPS and ports 80/443 are reachable. Do not enable HSTS until the first
 HTTPS deployment has been verified.
+
+## Production backups and recovery
+
+The production stack includes three stateful resources: PostgreSQL, MongoDB,
+and the `portfolio_uploads` volume containing portraits. Back up all three as a
+single unit. The scripts below run on the VPS and read the existing production
+environment file; they never include that environment file or its secrets in a
+backup.
+
+Create a backup:
+
+```bash
+cd /opt/portfolio
+chmod +x scripts/backup-production.sh scripts/restore-production.sh
+BACKUP_DIR=/opt/portfolio-backups ./scripts/backup-production.sh
+```
+
+Each backup is a timestamped directory containing a PostgreSQL dump, a MongoDB
+archive, uploaded media, SHA-256 checksums, and metadata. The script verifies
+each archive before reporting success and keeps 14 days by default. Change the
+retention window with `RETENTION_DAYS`, for example:
+
+```bash
+BACKUP_DIR=/opt/portfolio-backups RETENTION_DAYS=30 ./scripts/backup-production.sh
+```
+
+Backups stored only on the VPS do **not** protect against loss of the VPS.
+Copy the resulting backup directory to storage outside the server after every
+successful backup. Until an off-site provider is selected, a manual pull to a
+personal computer is a valid starting point:
+
+```bash
+scp -i ~/.ssh/id_ed25519_vps -r deploy@your-server:/opt/portfolio-backups ./portfolio-backups
+```
+
+Schedule the backup daily as the `deploy` user with `crontab -e`:
+
+```cron
+15 3 * * * BACKUP_DIR=/opt/portfolio-backups /opt/portfolio/scripts/backup-production.sh >> /opt/portfolio-backups/backup.log 2>&1
+```
+
+Test restoration on a non-production copy before relying on it. The restore
+script stops the public application and overwrites PostgreSQL, MongoDB, and
+uploaded files, so it requires an explicit `RESTORE` confirmation:
+
+```bash
+cd /opt/portfolio
+./scripts/restore-production.sh /opt/portfolio-backups/2026-01-01T03-15-00Z
+```
 
 ## Configuration and security
 
