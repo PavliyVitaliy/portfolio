@@ -80,8 +80,9 @@ Open `http://localhost:3000`. The private content editor is at
 `http://localhost:3000/admin`.
 
 Sign in with the administrator credentials from `backend/app/.env`, then create
-the first experience record. The public home page needs this record before it
-can render portfolio content.
+the first experience record. Experience, profile, and project content can be
+added independently; the public page renders configured sections as they become
+available.
 
 ### Stop local services
 
@@ -175,7 +176,8 @@ cross-platform instructions.
 ```text
 backend/       FastAPI app, migrations, tests, and environment templates
 frontend/      Next.js app and admin UI
-nginx/         Development and production reverse-proxy configs
+nginx/         Local development and test reverse-proxy configs
+caddy/         Production HTTPS reverse-proxy config
 docker-compose.yaml             Local development backend stack
 docker-compose.test.yaml        Isolated backend test stack
 docker-compose.production.yaml  Production container stack
