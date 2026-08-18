@@ -1,6 +1,6 @@
 services:
   portfolio-postgres-db:
-    image: postgres:14
+    image: postgres:14.23
     container_name: portfolio-postgres-db
     ports:
       - 5432:5432

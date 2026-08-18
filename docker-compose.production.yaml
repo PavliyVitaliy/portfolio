@@ -1,6 +1,6 @@
 services:
   portfolio-postgres-db:
-    image: postgres:14
+    image: postgres:14.23
     restart: unless-stopped
     env_file:
       - ${BACKEND_ENV_FILE:-backend/app/.env.production}

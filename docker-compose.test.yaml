@@ -1,6 +1,6 @@
 services:
   portfolio-postgres-db-test:
-    image: postgres:14
+    image: postgres:14.23
     container_name: portfolio-postgres-db-test
     ports:
       - 5433:5432
