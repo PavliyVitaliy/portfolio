@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Vitalii Pavlii — Senior Full-Stack Software Engineer";
+import { siteConfig } from "@/config/site";
+
+export const alt = `${siteConfig.name} — ${siteConfig.role}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -35,22 +37,22 @@ export default function OpenGraphImage() {
               width: "64px",
             }}
           >
-            VP
+            {siteConfig.initials}
           </div>
           <span style={{ fontSize: 28, fontWeight: 600, letterSpacing: "0.04em" }}>PORTFOLIO</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <span style={{ color: "#075985", fontSize: 22, fontWeight: 700, letterSpacing: "0.2em" }}>
-            INDEPENDENT SOFTWARE ENGINEER
+            {siteConfig.socialKicker.toUpperCase()}
           </span>
           <span style={{ fontFamily: "serif", fontSize: 76, fontWeight: 700, letterSpacing: "-0.04em" }}>
-            Vitalii Pavlii
+            {siteConfig.name}
           </span>
-          <span style={{ color: "#57534e", fontSize: 30 }}>Senior Full-Stack Software Engineer</span>
+          <span style={{ color: "#57534e", fontSize: 30 }}>{siteConfig.role}</span>
         </div>
         <div style={{ borderTop: "2px solid #d6d3d1", display: "flex", justifyContent: "space-between", paddingTop: "24px" }}>
-          <span style={{ color: "#57534e", fontSize: 22 }}>Reliable products, systems and delivery processes.</span>
-          <span style={{ color: "#075985", fontSize: 22 }}>vitaliipavlii.com</span>
+          <span style={{ color: "#57534e", fontSize: 22 }}>{siteConfig.socialTagline}</span>
+          <span style={{ color: "#075985", fontSize: 22 }}>{new URL(siteConfig.url).host}</span>
         </div>
       </div>
     ),

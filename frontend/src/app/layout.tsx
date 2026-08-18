@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
+
+import { siteConfig } from "@/config/site";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vitaliipavlii.com"),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Vitalii Pavlii — Senior Full-Stack Software Engineer",
-    template: "%s | Vitalii Pavlii",
+    default: `${siteConfig.name} — ${siteConfig.role}`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "Senior full-stack software engineer with 10+ years of experience building reliable products, distributed systems, and delivery processes.",
-  authors: [{ name: "Vitalii Pavlii", url: "https://vitaliipavlii.com" }],
-  creator: "Vitalii Pavlii",
+  description: siteConfig.description,
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
   alternates: {
     canonical: "/",
   },
@@ -25,16 +27,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/",
-    siteName: "Vitalii Pavlii — Portfolio",
-    title: "Vitalii Pavlii — Senior Full-Stack Software Engineer",
-    description:
-      "Senior full-stack software engineer building reliable products, distributed systems, and delivery processes.",
+    siteName: `${siteConfig.name} — Portfolio`,
+    title: `${siteConfig.name} — ${siteConfig.role}`,
+    description: siteConfig.socialDescription,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vitalii Pavlii — Senior Full-Stack Software Engineer",
-    description:
-      "Senior full-stack software engineer building reliable products, distributed systems, and delivery processes.",
+    title: `${siteConfig.name} — ${siteConfig.role}`,
+    description: siteConfig.socialDescription,
   },
 };
 
