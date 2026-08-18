@@ -13,7 +13,7 @@ services:
       - postgres_test_data:/var/lib/postgresql/data
 
   portfolio-mongo-db-test:
-    image: mongo
+    image: mongo:8
     container_name: portfolio-mongo-db-test
     ports:
       - 27018:27017
@@ -23,6 +23,11 @@ services:
     volumes:
       - mongo_test_data:/data/db
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand(\"ping\")' >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
     networks:
       - portfolio.network.test
 
@@ -38,8 +43,10 @@ services:
     volumes:
       - ./backend:/code/backend
     depends_on:
-      - portfolio-postgres-db-test
-      - portfolio-mongo-db-test
+      portfolio-postgres-db-test:
+        condition: service_started
+      portfolio-mongo-db-test:
+        condition: service_healthy
     networks:
       - portfolio.network.test
     ports:
