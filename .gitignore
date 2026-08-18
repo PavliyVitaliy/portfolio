@@ -5,6 +5,7 @@ __pycache__/
 
 # DB and env variables
 .env
+.env.production
 backend/app/.env.production
 .venv
 env/

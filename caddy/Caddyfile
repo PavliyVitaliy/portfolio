@@ -1,0 +1,33 @@
+{
+	email {$LETSENCRYPT_EMAIL}
+}
+
+www.vitaliipavlii.com {
+	redir https://vitaliipavlii.com{uri} permanent
+}
+
+vitaliipavlii.com {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+	}
+
+	@health path /health
+	handle @health {
+		respond "healthy\n" 200
+	}
+
+	@api path /api/v1/*
+	handle @api {
+		reverse_proxy portfolio-backend:8000
+	}
+
+	handle {
+		reverse_proxy portfolio-frontend:3000
+	}
+}

@@ -1,4 +1,5 @@
 COMPOSE ?= docker compose
+PRODUCTION_ENV_FILE ?= .env.production
 
 .PHONY: up stop down logs test frontend-build production-up production-stop
 
@@ -23,7 +24,7 @@ frontend-build:
 	cd frontend && npm run build
 
 production-up:
-	$(COMPOSE) -f docker-compose.production.yaml up --detach --build
+	$(COMPOSE) --env-file $(PRODUCTION_ENV_FILE) -f docker-compose.production.yaml up --detach --build
 
 production-stop:
-	$(COMPOSE) -f docker-compose.production.yaml stop
+	$(COMPOSE) --env-file $(PRODUCTION_ENV_FILE) -f docker-compose.production.yaml stop

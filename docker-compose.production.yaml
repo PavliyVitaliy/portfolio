@@ -71,10 +71,14 @@ services:
       - portfolio-network
 
   portfolio-proxy:
-    build:
-      context: .
-      dockerfile: ./nginx/proxy.production.Dockerfile
+    image: caddy:2-alpine
     restart: unless-stopped
+    environment:
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?Set LETSENCRYPT_EMAIL in .env.production}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       portfolio-backend:
         condition: service_healthy
@@ -82,6 +86,7 @@ services:
         condition: service_healthy
     ports:
       - "80:80"
+      - "443:443"
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/health >/dev/null"]
       interval: 15s
@@ -98,3 +103,5 @@ volumes:
   postgres_production_data:
   mongo_production_data:
   portfolio_uploads:
+  caddy_data:
+  caddy_config:

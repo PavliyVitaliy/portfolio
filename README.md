@@ -8,7 +8,8 @@ private admin area for managing content and a profile portrait.
 - Frontend: Next.js 16, React 19, Tailwind CSS 4
 - Backend: FastAPI, FastAPI Users, SQLAlchemy and Alembic
 - Data: PostgreSQL for users/authentication; MongoDB for public portfolio data
-- Infrastructure: Docker Compose and Nginx
+- Infrastructure: Docker Compose, Nginx for local development, and Caddy for
+  production HTTPS
 
 ## Prerequisites
 
@@ -113,33 +114,40 @@ npm run build
 ## Production container stack
 
 `docker-compose.production.yaml` builds the standalone Next.js image, FastAPI,
-PostgreSQL, MongoDB, and Nginx. Only Nginx exposes port 80; databases, backend,
-and frontend remain on the internal Docker network.
+PostgreSQL, MongoDB, and Caddy. Caddy is the only public service: it exposes
+ports 80/443, obtains and renews Let's Encrypt certificates for
+`vitaliipavlii.com` and `www.vitaliipavlii.com`, and redirects `www` to the
+canonical domain. Databases, backend, and frontend remain on the internal
+Docker network.
 
 ```bash
+cp .env.production.example .env.production
 cp backend/app/.env.production.example backend/app/.env.production
-# Replace every change-me value with a unique secret before continuing.
-docker compose -f docker-compose.production.yaml up --detach --build
-docker compose -f docker-compose.production.yaml exec portfolio-backend alembic upgrade head
-docker compose -f docker-compose.production.yaml exec portfolio-backend python actions/create_superuser.py
+# Set a real email address in .env.production. Replace every change-me value
+# with a unique secret in backend/app/.env.production before continuing.
+docker compose --env-file .env.production -f docker-compose.production.yaml up --detach --build
+docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend alembic upgrade head
+docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend python actions/create_superuser.py
 ```
 
 PowerShell:
 
 ```powershell
+Copy-Item .env.production.example .env.production
 Copy-Item backend/app/.env.production.example backend/app/.env.production
-# Replace every change-me value with a unique secret before continuing.
-docker compose -f docker-compose.production.yaml up --detach --build
-docker compose -f docker-compose.production.yaml exec portfolio-backend alembic upgrade head
-docker compose -f docker-compose.production.yaml exec portfolio-backend python actions/create_superuser.py
+# Set a real email address in .env.production. Replace every change-me value
+# with a unique secret in backend/app/.env.production before continuing.
+docker compose --env-file .env.production -f docker-compose.production.yaml up --detach --build
+docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend alembic upgrade head
+docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend python actions/create_superuser.py
 ```
 
 The production stack persists PostgreSQL, MongoDB, and uploaded portrait files
 in named Docker volumes. Back up all three before upgrades or server changes.
 
-The current production Nginx config is HTTP-only by design. Add the domain,
-TLS certificates, and HTTPS redirect during the VPS deployment step; do not set
-HSTS until HTTPS is working.
+Caddy automatically requests certificates when DNS for both domains resolves to
+the VPS and ports 80/443 are reachable. Do not enable HSTS until the first
+HTTPS deployment has been verified.
 
 ## Configuration and security
 
