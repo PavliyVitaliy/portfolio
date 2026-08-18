@@ -62,7 +62,7 @@ Run these once after the databases start:
 
 ```bash
 docker compose exec portfolio-backend alembic upgrade head
-docker compose exec portfolio-backend python actions/create_superuser.py
+docker compose exec portfolio-backend python -m actions.create_superuser
 ```
 
 The administrator email and password come from `backend/app/.env`. Creating
@@ -127,7 +127,7 @@ cp backend/app/.env.production.example backend/app/.env.production
 # with a unique secret in backend/app/.env.production before continuing.
 docker compose --env-file .env.production -f docker-compose.production.yaml up --detach --build
 docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend alembic upgrade head
-docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend python actions/create_superuser.py
+docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend python -m actions.create_superuser
 ```
 
 PowerShell:
@@ -139,7 +139,7 @@ Copy-Item backend/app/.env.production.example backend/app/.env.production
 # with a unique secret in backend/app/.env.production before continuing.
 docker compose --env-file .env.production -f docker-compose.production.yaml up --detach --build
 docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend alembic upgrade head
-docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend python actions/create_superuser.py
+docker compose --env-file .env.production -f docker-compose.production.yaml exec portfolio-backend python -m actions.create_superuser
 ```
 
 The production stack persists PostgreSQL, MongoDB, and uploaded portrait files

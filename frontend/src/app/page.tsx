@@ -1,11 +1,13 @@
 import Link from "next/link";
 
-import type { WorkExperience } from "@/api/experience/experience";
+import type { Experience, WorkExperience } from "@/api/experience/experience";
 import { getExperience } from "@/api/experience/getExperience";
 import { getProfile, profileImageUrl } from "@/api/profile/getProfile";
 import { getProjects } from "@/api/projects/getProjects";
 
 export const dynamic = "force-dynamic";
+
+const EMPTY_EXPERIENCE: Experience = { id: "", user_id: "" };
 
 function Section({ children, id, label, title }: Readonly<{ children: React.ReactNode; id: string; label: string; title: string }>) {
   return <section className="scroll-mt-8 border-t border-stone-300 py-14 sm:py-20" id={id}><p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-800">{label}</p><h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-stone-950 sm:text-4xl">{title}</h2><div className="mt-8">{children}</div></section>;
@@ -21,7 +23,8 @@ function WorkCard({ item }: Readonly<{ item: WorkExperience }>) {
 }
 
 export default async function Home() {
-  const [experience, profile, projects] = await Promise.all([getExperience(), getProfile(), getProjects()]);
+  const [loadedExperience, profile, projects] = await Promise.all([getExperience(), getProfile(), getProjects()]);
+  const experience = loadedExperience ?? EMPTY_EXPERIENCE;
   const contact = experience.contact_information;
   const fullName = [contact?.first_name, contact?.last_name].filter(Boolean).join(" ");
   const imageUrl = profileImageUrl(profile?.photo_filename);

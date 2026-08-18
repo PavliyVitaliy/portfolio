@@ -88,7 +88,7 @@ services:
       - "80:80"
       - "443:443"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/health >/dev/null"]
+      test: ["CMD-SHELL", "curl -fsS --resolve vitaliipavlii.com:443:127.0.0.1 https://vitaliipavlii.com/health >/dev/null"]
       interval: 15s
       timeout: 5s
       retries: 5
