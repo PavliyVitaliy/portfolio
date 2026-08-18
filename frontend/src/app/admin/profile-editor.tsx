@@ -10,12 +10,17 @@ export function ProfileEditor({ initialProfile }: Readonly<{ initialProfile: Pro
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function handleUnauthorized() {
+    router.replace("/login?reason=session-expired");
+  }
+
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true); setError(null);
     const form = new FormData(event.currentTarget);
     const response = await fetch("/api/profile", { method: initialProfile ? "PATCH" : "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ availability: form.get("availability") || null, github_url: form.get("github_url") || null }) });
     setIsSaving(false);
+    if (response.status === 401) { handleUnauthorized(); return; }
     if (!response.ok) { setError("Unable to save profile."); return; }
     router.refresh();
   }
@@ -27,6 +32,7 @@ export function ProfileEditor({ initialProfile }: Readonly<{ initialProfile: Pro
     const data = new FormData(); data.set("image", image);
     const response = await fetch("/api/profile/photo", { method: "POST", body: data });
     setIsSaving(false);
+    if (response.status === 401) { handleUnauthorized(); return; }
     if (!response.ok) { setError("Unable to upload photo. Use a JPEG, PNG, or WebP file up to 5 MB."); return; }
     router.refresh();
   }
